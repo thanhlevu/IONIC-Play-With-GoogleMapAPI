@@ -1,0 +1,91 @@
+<!--
+  Generated template for the SettingMapPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+  <ion-navbar>
+    <ion-title>SettingMapPage</ion-title>
+    <ion-buttons end>
+      <button ion-button (click)="closeModal()">Close</button></ion-buttons
+    >
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding
+  ><ion-list>
+    <ion-item>
+      <ion-label>Start Time</ion-label>
+      <ion-datetime
+        displayFormat="HH:mm"
+        pickerFormat="HH:mm"
+        name="startTime"
+        ngModel
+        [(ngModel)]="departure_time"
+      ></ion-datetime>
+    </ion-item>
+    <ion-item>
+      <ion-label color="primary" stacked>Departure From: </ion-label>
+      <ion-input
+        type="text"
+        [(ngModel)]="originGeo"
+        name="departurePoint"
+        ngModel
+        placeholder="Current Location"
+      ></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Vehicles</ion-label>
+      <ion-select [(ngModel)]="vehicle">
+        <ion-option value="Car">Car</ion-option>
+        <ion-option value="Bike">Bike</ion-option>
+        <ion-option value="Walking">Walking</ion-option>
+        <ion-option value="Bus">Bus</ion-option>
+        <ion-option value="Train">Train</ion-option>
+        <ion-option value="Rail">Rail</ion-option>
+        <ion-option value="Metro">Metro</ion-option>
+      </ion-select>
+    </ion-item>
+    <button ion-button block round (click)="getRouteInfo()">
+      <ion-icon icon-start name="search"></ion-icon>
+      Search
+    </button>
+  </ion-list>
+  <ion-card *ngIf="directionMapJson != undefined">
+    <ion-item
+      *ngIf="(directionMapJson.routes[0]?.legs)[0].departure_time?.text"
+    >
+      <span item-start
+        >Departure Time:
+        {{ (directionMapJson.routes[0]?.legs)[0].departure_time?.text }}</span
+      >
+    </ion-item>
+    <ion-item *ngFor="let des of (directionMapJson.routes[0]?.legs)[0]?.steps">
+      <ion-icon [name]="des.travel_icon" item-start large></ion-icon>
+      <h2>{{ des.start_location_address }}</h2>
+      <p>
+        {{ des.transit_details?.departure_time.text }} {{ des.travel_mode }} :
+        {{ des.distance.text }} :
+        {{ des.duration.text }}
+      </p>
+    </ion-item>
+    <ion-item
+      *ngIf="(directionMapJson.routes[0]?.legs)[0].departure_time?.text"
+    >
+      <span item-start
+        >Arrival Time:
+        {{ (directionMapJson.routes[0]?.legs)[0].arrival_time?.text }}</span
+      >
+    </ion-item>
+    <ion-item>
+      <span item-start>{{
+        (directionMapJson.routes[0]?.legs)[0].distance.text
+      }}</span>
+      <span item-end>{{
+        (directionMapJson.routes[0]?.legs)[0].duration.text
+      }}</span>
+    </ion-item>
+  </ion-card>
+</ion-content>
