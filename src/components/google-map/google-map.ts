@@ -31,7 +31,7 @@ export class GoogleMapComponent {
   destination = { lat: 60.259639, lng: 24.845552 };
   currentLocation: any = "";
   departureTime = new Date();
-  vehicle: [string];
+  vehicle: string;
   mode = "DRIVING";
   origin: {
     lat: number;
@@ -77,10 +77,11 @@ export class GoogleMapComponent {
           console.log("that.MyLocation: ", that.currentLocation);
 
           // ==> display the route from "origin" to "destination"
-          // if using the public transport
+          // if using the private transport
           if (that.onStartFromNewPlace == false) {
             that.origin = that.currentLocation;
           }
+          console.log("that.selectedMode: ", that.selectedMode);
 
           if (that.selectedMode !== "TRANSIT") {
             that.directionsService.route(
@@ -102,7 +103,7 @@ export class GoogleMapComponent {
               }
             );
           }
-          // if using the private transport
+          // if using the public transport
           else {
             that.directionsService.route(
               {
@@ -182,11 +183,18 @@ export class GoogleMapComponent {
       this.destination.lat = +directionLineData.destination.split(",")[0];
       this.destination.lng = +directionLineData.destination.split(",")[1];
       this.selectedMode = directionLineData.travelMode;
+      console.log("directionLineData.travelMode", directionLineData.travelMode);
+
       console.log("selectedMode", this.selectedMode);
 
       this.departureTime = directionLineData.transitOptions.departureTime;
-      if (this.selectedMode == "")
-        this.vehicle = directionLineData.transitOptions.modes;
+      if (this.selectedMode == "TRANSIT") {
+        this.vehicle = directionLineData.transitOptions.modes.toUpperCase();
+        console.log(" this.vehicle", this.vehicle);
+      }
+      if (this.selectedMode == "BICYCLE") {
+        this.selectedMode = "BICYCLING";
+      }
       this.onStartFromNewPlace = true;
       this.calculateAndDisplayRoute();
     });

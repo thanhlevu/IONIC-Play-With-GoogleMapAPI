@@ -252,7 +252,10 @@ export class SettingMapPage {
         //arrivalTime: this.routeUrl.split("&arrival_time=")[1].split("&")[0],
         modes:
           this.routeUrl.split("&mode=")[1].split("&")[0] == "transit"
-            ? [this.routeUrl.split("&transit_mode=")[1].split("&")[0]]
+            ? this.routeUrl
+                .split("&transit_mode=")[1]
+                .split("&")[0]
+                .toUpperCase()
             : "", // BUS, RAIL, SUBWAY, TRAIN, TRAM
         routingPreference: "LESS_WALKING" // "FEWER_TRANSFERS" or "LESS_WALKING"
       }
