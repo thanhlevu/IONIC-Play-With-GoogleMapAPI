@@ -28,8 +28,16 @@ declare var google;
 export class GoogleMapComponent {
   @ViewChild("map") mapElement;
   map: any;
-  Destination = { lat: 60.259639, lng: 24.845552 };
-  MyLocation: any = "";
+  destination = { lat: 60.259639, lng: 24.845552 };
+  currentLocation: any = "";
+  departureTime = new Date();
+  vehicle: [string];
+  mode = "DRIVING";
+  origin: {
+    lat: number;
+    lng: number;
+  };
+  onStartFromNewPlace = false;
   selectedMode = "DRIVING"; //   ==>    "DRIVING" / "BICYCLING" / "TRANSIT" / "WALKING"
   directionsService = new google.maps.DirectionsService();
   directionsDisplay = new google.maps.DirectionsRenderer();
@@ -44,6 +52,7 @@ export class GoogleMapComponent {
   ngOnInit() {
     //this.initMap();
     this.calculateAndDisplayRoute();
+    console.log("1departureTime", this.departureTime);
   }
 
   calculateAndDisplayRoute() {
@@ -60,12 +69,12 @@ export class GoogleMapComponent {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         function(currentPosition) {
-          that.MyLocation = {
+          that.currentLocation = {
             lat: currentPosition.coords.latitude,
             lng: currentPosition.coords.longitude
           };
-          map.setCenter(that.MyLocation);
-          console.log(that.MyLocation);
+          map.setCenter(that.currentLocation);
+          console.log("that.MyLocation: ", that.currentLocation);
 
           // ==> measure the Distance between 2 geolocation points
           /*  console.log(
@@ -88,11 +97,15 @@ export class GoogleMapComponent {
 
           // ==> display the route from "origin" to "destination"
           // if using the public transport
+          if (that.onStartFromNewPlace == false) {
+            that.origin = that.currentLocation;
+          }
+
           if (that.selectedMode !== "TRANSIT") {
             that.directionsService.route(
               {
-                origin: that.MyLocation, // { lat: 60.221492899999994, lng: 24.7788449 }  or 60.2222,24.656 or "Espoo"
-                destination: that.Destination,
+                origin: that.origin, // { lat: 60.221492899999994, lng: 24.7788449 }  or 60.2222,24.656 or "Espoo"
+                destination: that.destination,
                 travelMode: google.maps.TravelMode[that.selectedMode]
                 //   transitOptions: {
                 //     departureTime: new Date("now"), // Date Format:  "2019-03-25T22:00:00Z"
@@ -118,13 +131,13 @@ export class GoogleMapComponent {
           else {
             that.directionsService.route(
               {
-                origin: that.MyLocation, // { lat: 60.221492899999994, lng: 24.7788449 }  or 60.2222,24.656 or "Espoo"
-                destination: that.Destination,
+                origin: that.origin, // { lat: 60.221492899999994, lng: 24.7788449 }  or 60.2222,24.656 or "Espoo"
+                destination: that.destination,
                 travelMode: google.maps.TravelMode[that.selectedMode],
                 transitOptions: {
-                  departureTime: new Date("now"), // Date Format:  "2019-03-25T22:00:00Z"
-                  arrivalTime: new Date("2019-03-25T22:00:00Z"),
-                  modes: ["TRAIN"], // BUS, RAIL, SUBWAY, TRAIN, TRAM
+                  departureTime: that.departureTime, // Date Format:  "2019-03-25T22:00:00Z"
+                  //arrivalTime: new Date("2019-03-25T22:00:00Z"),
+                  modes: [that.vehicle], // BUS, RAIL, SUBWAY, TRAIN, TRAM
                   routingPreference: "FEWER_TRANSFERS" // "FEWER_TRANSFERS" or "LESS_WALKING"
                 }
               },
@@ -184,7 +197,7 @@ export class GoogleMapComponent {
     }
   }
 
-  initMap() {
+  /*   initMap() {
     this.geolocation
       .getCurrentPosition()
       .then(resp => {
@@ -251,10 +264,10 @@ export class GoogleMapComponent {
       // data.coords.latitude
       // data.coords.longitude
     });
-  }
+  } */
 
   // measure the Distance between 2 geolocation points by using Math Formular
-  deg2rad(deg) {
+  /*   deg2rad(deg) {
     return deg * (Math.PI / 180);
   }
   getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
@@ -270,7 +283,7 @@ export class GoogleMapComponent {
     var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     var d = R * c; // Distance in km
     return d;
-  }
+  } */
 
   openModal() {
     const myModalOptions: ModalOptions = {
@@ -280,16 +293,23 @@ export class GoogleMapComponent {
       // leaveAnimation?: string;
       // cssClass?: string;
     };
-    var departureTime = new Date();
-    console.log("aa", departureTime.getTime());
+
+    console.log("1onStartFromNewPlace: ", this.onStartFromNewPlace);
+    console.log("1origin: ", this.origin);
+    console.log("1this.modes: ", this.mode);
+    console.log("1this.selectedMode: ", this.selectedMode);
+    console.log("1departureTime", this.departureTime);
 
     let routeData = {
-      originGeo: this.MyLocation,
-      destinationGeo: this.Destination,
-      mode: "DRIVING",
+      originGeo:
+        this.onStartFromNewPlace == false ? this.currentLocation : this.origin,
+      destinationGeo: this.destination,
+      mode: this.mode,
       transit_mode: "",
-      departure_time: new Date()
+      departure_time: this.departureTime
     };
+    console.log("1routeData", routeData);
+
     let settingMapModal: Modal = this.modal.create(
       "SettingMapPage",
       {
@@ -299,14 +319,24 @@ export class GoogleMapComponent {
     );
     settingMapModal.present();
 
-    settingMapModal.onWillDismiss(data => {
-      console.log("i am about to dismiss");
-      console.log(data);
+    settingMapModal.onWillDismiss(directionLineData => {
+      //console.log(directionLineData);
     });
 
-    settingMapModal.onDidDismiss(data => {
-      console.log("i have dismissed");
-      console.log(data);
+    settingMapModal.onDidDismiss(directionLineData => {
+      console.log("directionLineData222", directionLineData);
+      this.origin.lat = +directionLineData.origin.split(",")[0];
+      this.origin.lng = +directionLineData.origin.split(",")[1];
+      this.destination.lat = +directionLineData.destination.split(",")[0];
+      this.destination.lng = +directionLineData.destination.split(",")[1];
+      this.selectedMode = directionLineData.travelMode;
+      console.log("selectedMode", this.selectedMode);
+
+      this.departureTime = directionLineData.transitOptions.departureTime;
+      if (this.selectedMode == "")
+        this.vehicle = directionLineData.transitOptions.modes;
+      this.onStartFromNewPlace = true;
+      this.calculateAndDisplayRoute();
     });
   }
 }

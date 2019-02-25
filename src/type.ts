@@ -72,3 +72,15 @@ export interface GeolocationByName {
     }
   ];
 }
+
+export interface DirectionLineData {
+  origin: any;
+  destination: any;
+  travelMode: string;
+  transitOptions?: {
+    departureTime: Date;
+    arrivalTime: Date;
+    modes: [string]; // BUS, RAIL, SUBWAY, TRAIN, TRAM
+    routingPreference: string; // "FEWER_TRANSFERS" or "LESS_WALKING"
+  };
+}
