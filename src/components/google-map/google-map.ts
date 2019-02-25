@@ -76,25 +76,6 @@ export class GoogleMapComponent {
           map.setCenter(that.currentLocation);
           console.log("that.MyLocation: ", that.currentLocation);
 
-          // ==> measure the Distance between 2 geolocation points
-          /*  console.log(
-            "Radius: ",
-            that.getDistanceFromLatLonInKm(
-              60.211127,
-              24.65591,
-              60.187734,
-              24.940871
-            )
-          ); */
-
-          // ==> measure the Distance between 2 geolocation points.
-          /* var loc1 = new google.maps.LatLng({ lat: 60.211127, lng: 24.65591 }); // ({ lat: 60.2222, lng: 24.656 })  or (60.2222,24.656)
-          var loc2 = new google.maps.LatLng(60.187734, 24.940871);
-          console.log(
-            "Distance(m): ",
-            google.maps.geometry.spherical.computeDistanceBetween(loc1, loc2)
-          ); */
-
           // ==> display the route from "origin" to "destination"
           // if using the public transport
           if (that.onStartFromNewPlace == false) {
@@ -107,12 +88,6 @@ export class GoogleMapComponent {
                 origin: that.origin, // { lat: 60.221492899999994, lng: 24.7788449 }  or 60.2222,24.656 or "Espoo"
                 destination: that.destination,
                 travelMode: google.maps.TravelMode[that.selectedMode]
-                //   transitOptions: {
-                //     departureTime: new Date("now"), // Date Format:  "2019-03-25T22:00:00Z"
-                //     arrivalTime: new Date("2019-03-25T22:00:00Z"),
-                //     modes: ["TRAIN"], // BUS, RAIL, SUBWAY, TRAIN, TRAM
-                //     routingPreference: "FEWER_TRANSFERS" // "FEWER_TRANSFERS" or "LESS_WALKING"
-                //   }
               },
               function(response, status) {
                 if (status === "OK") {
@@ -154,41 +129,6 @@ export class GoogleMapComponent {
               }
             );
           }
-
-          //Get The Route's Info
-          //https://maps.googleapis.com/maps/api/directions/json?origin=60.221501, 24.778792&destination=helsinky&mode=transit&transit_mode=train&departure_time=now&key=AIzaSyAj6v6LHIeWH3B-Il-AZiXuhMWq3hHsQu8
-          /*           let url = `https://maps.googleapis.com/maps/api/directions/json?origin=${
-            that.MyLocation.lat
-          },${
-            that.MyLocation.lng
-          }&destination=helsinky&mode=transit&transit_mode=train&departure_time=now&key=AIzaSyAj6v6LHIeWH3B-Il-AZiXuhMWq3hHsQu8`;
-          console.log("url: " + url);
-          that.http.get(url).subscribe((data: DirectionMapJson) => {
-            console.log(
-              data.routes[0].legs[0].departure_time.text,
-              data.routes[0].legs[0].duration.text
-            );
-            for (var j = 0; j < data.routes[0].legs[0].steps.length; j++) {
-              if (data.routes[0].legs[0].steps[j].transit_details) {
-                console.log(
-                  data.routes[0].legs[0].steps[j].transit_details.departure_time
-                    .text,
-                  data.routes[0].legs[0].steps[
-                    j
-                  ].transit_details.line.vehicle.type.split("_")[1],
-                  data.routes[0].legs[0].steps[j].transit_details.line
-                    .short_name
-                );
-              } else {
-                console.log(data.routes[0].legs[0].steps[j].travel_mode);
-              }
-              console.log(
-                data.routes[0].legs[0].steps[j].distance.text,
-                data.routes[0].legs[0].steps[j].duration.text
-              );
-            }
-            console.log(data.routes[0].legs[0].arrival_time.text);
-          }); */
         },
         function() {}
       );
@@ -196,94 +136,6 @@ export class GoogleMapComponent {
       // Browser doesn't support Geolocation
     }
   }
-
-  /*   initMap() {
-    this.geolocation
-      .getCurrentPosition()
-      .then(resp => {
-        // resp.coords.latitude
-        // resp.coords.longitude
-        //60.221501, 24.778792   = kilorinne
-        let coords = new google.maps.LatLng(
-          resp.coords.latitude,
-          resp.coords.longitude
-        );
-        //https://maps.googleapis.com/maps/api/directions/json?origin=60.221501, 24.778792&destination=helsinky&mode=transit&transit_mode=train&departure_time=now&key=AIzaSyDHY3SLJrzEYN-nWVsI5ix4dU1hrL5TJ3o
-        let url = `https://maps.googleapis.com/maps/api/directions/json?origin=${
-          resp.coords.latitude
-        },${
-          resp.coords.longitude
-        }&destination=helsinky&key=AIzaSyAj6v6LHIeWH3B-Il-AZiXuhMWq3hHsQu8`;
-        console.log("url: " + url);
-        this.http.get(url).subscribe(data => {
-          console.log("data: ", data);
-        });
-
-        let mapOptions: google.maps.MapOptions = {
-          center: coords,
-          zoom: 10,
-          mapTypeId: google.maps.MapTypeId.ROADMAP
-        };
-
-        this.map = new google.maps.Map(
-          this.mapElement.nativeElement,
-          mapOptions
-        );
-
-        let marker: google.maps.Marker = new google.maps.Marker({
-          map: this.map,
-          position: coords
-        });
-
-        let coords2 = new google.maps.LatLng(
-          resp.coords.latitude + 100,
-          resp.coords.longitude + 100
-        );
-        let marker2: google.maps.Marker = new google.maps.Marker({
-          map: this.map,
-          position: coords2
-        });
-
-        console.log(
-          "Radius: ",
-          this.getDistanceFromLatLonInKm(
-            resp.coords.latitude,
-            resp.coords.longitude,
-            resp.coords.latitude + 100,
-            resp.coords.longitude + 100
-          )
-        );
-      })
-      .catch(error => {
-        console.log("Error getting location", error);
-      });
-
-    let watch = this.geolocation.watchPosition();
-    watch.subscribe(data => {
-      // data can be a set of coordinates, or an error (if an error occurred).
-      // data.coords.latitude
-      // data.coords.longitude
-    });
-  } */
-
-  // measure the Distance between 2 geolocation points by using Math Formular
-  /*   deg2rad(deg) {
-    return deg * (Math.PI / 180);
-  }
-  getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
-    var R = 6371; // Radius of the earth in km
-    var dLat = this.deg2rad(lat2 - lat1); // deg2rad below
-    var dLon = this.deg2rad(lon2 - lon1);
-    var a =
-      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos(this.deg2rad(lat1)) *
-        Math.cos(this.deg2rad(lat2)) *
-        Math.sin(dLon / 2) *
-        Math.sin(dLon / 2);
-    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    var d = R * c; // Distance in km
-    return d;
-  } */
 
   openModal() {
     const myModalOptions: ModalOptions = {
