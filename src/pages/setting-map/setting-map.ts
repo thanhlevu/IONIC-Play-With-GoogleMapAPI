@@ -41,8 +41,8 @@ export class SettingMapPage {
       this.routeData.departure_time.getHours() +
       ":" +
       this.routeData.departure_time.getMinutes();
-    this.vehicle = "Car";
-    //this.originGeo = this.routeData.originGeo;
+    this.vehicle = localStorage.getItem("vehicle");
+    this.originGeo = localStorage.getItem("departure_point");
     this.getRouteInfo();
   }
 
@@ -50,6 +50,8 @@ export class SettingMapPage {
 
   //to get the location's info by name ==> https://maps.googleapis.com/maps/api/geocode/json?address=helsinki&key=AIzaSyAj6v6LHIeWH3B-Il-AZiXuhMWq3hHsQu8
   getRouteInfo() {
+    localStorage.setItem("departure_point", this.originGeo);
+    localStorage.setItem("vehicle", this.vehicle);
     //set the new departure time for the route
     this.routeData.departure_time.setHours(this.departure_time.split(":")[0]);
     this.routeData.departure_time.getMinutes(this.departure_time.split(":")[1]);
@@ -78,32 +80,36 @@ export class SettingMapPage {
     console.log("2this.routeUrl", this.routeUrl);
 
     switch (this.vehicle) {
-      case "Car": {
+      case "car": {
         this.routeUrl += "&mode=driving";
         break;
       }
-      case "Walking": {
+      case "walking": {
         this.routeUrl += "&mode=walking";
         break;
       }
-      case "Bike": {
+      case "bike": {
         this.routeUrl += "&mode=bicycle";
         break;
       }
-      case "Bus": {
+      case "bus": {
         this.routeUrl += "&mode=transit&transit_mode=bus";
         break;
       }
-      case "Train": {
+      case "train": {
         this.routeUrl += "&mode=transit&transit_mode=train";
         break;
       }
-      case "Rail": {
+      case "rail": {
         this.routeUrl += "&mode=transit&transit_mode=rail";
         break;
       }
-      case "Metro": {
+      case "metro": {
         this.routeUrl += "&mode=transit&transit_mode=subway";
+        break;
+      }
+      default: {
+        this.routeUrl += "&mode=driving";
         break;
       }
     }
@@ -157,11 +163,11 @@ export class SettingMapPage {
                 break;
               }
               case "DRIVING": {
-                if (this.vehicle == "undefined" || "Car") {
+                if (this.vehicle == "undefined" || "car") {
                   this.directionMapJson.routes[0].legs[0].steps[j].travel_icon =
                     "car";
                 }
-                if (this.vehicle == "Bike") {
+                if (this.vehicle == "bike") {
                   this.directionMapJson.routes[0].legs[0].steps[j].travel_icon =
                     "bicycle";
                 }
@@ -240,8 +246,11 @@ export class SettingMapPage {
   }
 
   closeModal() {
+    console.log("url ", this.routeUrl);
     let directionLineData = {
-      origin: this.routeUrl.split("origin=")[1].split("&destination")[0],
+      origin: this.originGeo
+        ? this.originGeo
+        : this.routeUrl.split("origin=")[1].split("&destination")[0],
       destination: this.routeUrl.split("&destination=")[1].split("&")[0],
       travelMode: this.routeUrl
         .split("&mode=")[1]
@@ -250,7 +259,7 @@ export class SettingMapPage {
       transitOptions: {
         departureTime: this.routeData.departure_time,
         //arrivalTime: this.routeUrl.split("&arrival_time=")[1].split("&")[0],
-        modes:
+        transportMode:
           this.routeUrl.split("&mode=")[1].split("&")[0] == "transit"
             ? this.routeUrl
                 .split("&transit_mode=")[1]

@@ -31,8 +31,7 @@ export class GoogleMapComponent {
   destination = { lat: 60.259639, lng: 24.845552 };
   currentLocation: any = "";
   departureTime = new Date();
-  vehicle: string;
-  mode = "DRIVING";
+  transportMode: string; //   ==>    "bus" / "train" / "subway" / "tram" / "rail"
   origin: {
     lat: number;
     lng: number;
@@ -91,7 +90,7 @@ export class GoogleMapComponent {
                 travelMode: google.maps.TravelMode[that.selectedMode]
               },
               function(response, status) {
-                if (status === "OK") {
+                if (status == "OK") {
                   that.directionsDisplay.setDirections(response);
                 } else if (
                   status == google.maps.GeocoderStatus.OVER_QUERY_LIMIT
@@ -113,12 +112,12 @@ export class GoogleMapComponent {
                 transitOptions: {
                   departureTime: that.departureTime, // Date Format:  "2019-03-25T22:00:00Z"
                   //arrivalTime: new Date("2019-03-25T22:00:00Z"),
-                  modes: [that.vehicle], // BUS, RAIL, SUBWAY, TRAIN, TRAM
+                  modes: [that.transportMode], // BUS, RAIL, SUBWAY, TRAIN, TRAM
                   routingPreference: "FEWER_TRANSFERS" // "FEWER_TRANSFERS" or "LESS_WALKING"
                 }
               },
               function(response, status) {
-                if (status === "OK") {
+                if (status == "OK") {
                   that.directionsDisplay.setDirections(response);
                 } else if (
                   status == google.maps.GeocoderStatus.OVER_QUERY_LIMIT
@@ -147,18 +146,12 @@ export class GoogleMapComponent {
       // cssClass?: string;
     };
 
-    console.log("1onStartFromNewPlace: ", this.onStartFromNewPlace);
-    console.log("1origin: ", this.origin);
-    console.log("1this.modes: ", this.mode);
-    console.log("1this.selectedMode: ", this.selectedMode);
-    console.log("1departureTime", this.departureTime);
-
     let routeData = {
       originGeo:
         this.onStartFromNewPlace == false ? this.currentLocation : this.origin,
       destinationGeo: this.destination,
-      mode: this.mode,
-      transit_mode: "",
+      modes: this.selectedMode,
+      transportMode: this.transportMode,
       departure_time: this.departureTime
     };
     console.log("1routeData", routeData);
@@ -178,10 +171,19 @@ export class GoogleMapComponent {
 
     settingMapModal.onDidDismiss(directionLineData => {
       console.log("directionLineData222", directionLineData);
-      this.origin.lat = +directionLineData.origin.split(",")[0];
-      this.origin.lng = +directionLineData.origin.split(",")[1];
-      this.destination.lat = +directionLineData.destination.split(",")[0];
-      this.destination.lng = +directionLineData.destination.split(",")[1];
+      if (directionLineData.origin.includes(",")) {
+        this.origin.lat = +directionLineData.origin.split(",")[0];
+        this.origin.lng = +directionLineData.origin.split(",")[1];
+      } else {
+        this.origin = directionLineData.origin;
+      }
+      if (directionLineData.destination.includes(",")) {
+        this.destination.lat = +directionLineData.destination.split(",")[0];
+        this.destination.lng = +directionLineData.destination.split(",")[1];
+      } else {
+        this.destination = directionLineData.destination;
+      }
+
       this.selectedMode = directionLineData.travelMode;
       console.log("directionLineData.travelMode", directionLineData.travelMode);
 
@@ -189,8 +191,7 @@ export class GoogleMapComponent {
 
       this.departureTime = directionLineData.transitOptions.departureTime;
       if (this.selectedMode == "TRANSIT") {
-        this.vehicle = directionLineData.transitOptions.modes.toUpperCase();
-        console.log(" this.vehicle", this.vehicle);
+        this.transportMode = directionLineData.transitOptions.transportMode.toUpperCase();
       }
       if (this.selectedMode == "BICYCLE") {
         this.selectedMode = "BICYCLING";
