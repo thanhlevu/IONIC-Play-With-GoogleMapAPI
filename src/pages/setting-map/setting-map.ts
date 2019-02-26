@@ -133,9 +133,9 @@ export class SettingMapPage {
       .subscribe((directionData: DirectionMapJson) => {
         this.directionMapJson = directionData;
         console.log("directionData: ", directionData);
-        if (directionData.status == "ZERO_RESULTS") {
+        if (directionData.status !== "OK") {
           this.originGeo = "";
-          alert("ZERO_RESULTS");
+          alert(directionData.status);
         } else if (directionData.routes[0]) {
           for (
             let j = 0;

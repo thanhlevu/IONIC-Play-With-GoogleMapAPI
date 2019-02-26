@@ -51,7 +51,6 @@ export class GoogleMapComponent {
   ngOnInit() {
     //this.initMap();
     this.calculateAndDisplayRoute();
-    console.log("1departureTime", this.departureTime);
   }
 
   calculateAndDisplayRoute() {
@@ -59,12 +58,14 @@ export class GoogleMapComponent {
 
     // create a map and zoom to the center point.
     var map = new google.maps.Map(document.getElementById("map"), {
-      zoom: 7
-      //center: { lat: 60.172922, lng: 24.938719 }    //Helsinki Geolocation
+      zoom: 7,
+      center: { lat: 60.172922, lng: 24.938719 } //Helsinki Geolocation
     });
     that.directionsDisplay.setMap(map);
 
     // get the current location
+    console.log("navigator.geolocation: ", navigator.geolocation);
+
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         function(currentPosition) {
