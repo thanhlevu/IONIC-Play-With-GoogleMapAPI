@@ -1,6 +1,13 @@
 # IONIC-Play-With-GoogleMapAPI
 IONIC-Play-With-GoogleMapAPI
 
+$ ionic cordova plugin add cordova-plugin-geolocation --variable GEOLOCATION_USAGE_DESCRIPTION="To locate you"
+$ npm install --save @ionic-native/geolocation@4
+
+$ ionic cordova plugin add cordova-plugin-google-nearby --variable API_KEY="123456789"
+$ npm install --save @ionic-native/google-nearby@4
+
+
 // ==> to get the location's info by Geolocation ==> https://maps.googleapis.com/maps/api/geocode/json?latlng=60.221501,%2024.778792&key=AIzaSyAj6v6LHIeWH3B-Il-AZiXuhMWq3hHsQu8
 
 // ==> to get the location's info by name ==> https://maps.googleapis.com/maps/api/geocode/json?address=helsinki&key=AIzaSyAj6v6LHIeWH3B-Il-AZiXuhMWq3hHsQu8
