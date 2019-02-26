@@ -35,24 +35,36 @@ export class SettingMapPage {
   ) {}
 
   ionViewWillLoad() {
-    this.routeData = this.navParams.get("data");
-    console.log("this.routeData2", this.routeData);
+    this.routeData = this.navParams.get("data"); // take the transfered route data
+
+    //get the departure time from the route data
     this.departure_time =
       this.routeData.departure_time.getHours() +
       ":" +
       this.routeData.departure_time.getMinutes();
+
+    // get the vehicle saved
     this.vehicle = localStorage.getItem("vehicle");
+
+    // get the starting point saved from GoogleMapPage
     this.originGeo = localStorage.getItem("departure_point");
-    this.getRouteInfo();
+
+    // setRouteInfo function to custom the route info
+    this.setRouteInfo();
   }
 
   //to get the location's info by Geolocation ==> https://maps.googleapis.com/maps/api/geocode/json?latlng=60.221501,%2024.778792&key=AIzaSyAj6v6LHIeWH3B-Il-AZiXuhMWq3hHsQu8
 
   //to get the location's info by name ==> https://maps.googleapis.com/maps/api/geocode/json?address=helsinki&key=AIzaSyAj6v6LHIeWH3B-Il-AZiXuhMWq3hHsQu8
-  getRouteInfo() {
+
+  setRouteInfo() {
+    // save or resave the starting point if the user input the new starting point
     localStorage.setItem("departure_point", this.originGeo);
+
+    // save or resave the vehicle if the user input the new vehicle
     localStorage.setItem("vehicle", this.vehicle);
-    //set the new departure time for the route
+
+    // set the new departure time for the route, present it on the Modal
     this.routeData.departure_time.setHours(this.departure_time.split(":")[0]);
     this.routeData.departure_time.getMinutes(this.departure_time.split(":")[1]);
 
@@ -60,7 +72,6 @@ export class SettingMapPage {
     //https://maps.googleapis.com/maps/api/directions/json?origin=60.221501, 24.778792&destination=helsinky&mode=transit&transit_mode=train&departure_time=now&key=AIzaSyDHY3SLJrzEYN-nWVsI5ix4dU1hrL5TJ3o
 
     //check if the user wants to start from somewhere else
-    console.log("2this.destinationGeo", this.routeData.destinationGeo);
     if (this.originGeo != "" || this.originGeo == undefined) {
       //locating by name is less accurate than by geolocation
       this.routeUrl = `https://maps.googleapis.com/maps/api/directions/json?origin=${
@@ -77,7 +88,6 @@ export class SettingMapPage {
         this.routeData.destinationGeo.lng
       }`;
     }
-    console.log("2this.routeUrl", this.routeUrl);
 
     switch (this.vehicle) {
       case "car": {
@@ -113,9 +123,7 @@ export class SettingMapPage {
         break;
       }
     }
-    console.log("2this.routeUrl", this.routeUrl);
-
-    // set the departure time if using the public transport
+    // set the departure time if using the public transport    (if transit => departure_time doesnt include milisecond)
     if (this.routeUrl.includes("&mode=transit&")) {
       this.routeUrl += `&departure_time=${Math.round(
         this.routeData.departure_time.getTime() / 1000
@@ -123,25 +131,28 @@ export class SettingMapPage {
     } else {
       this.routeUrl += `&departure_time=${this.routeData.departure_time.getTime()}&key=AIzaSyAj6v6LHIeWH3B-Il-AZiXuhMWq3hHsQu8`;
     }
-    // https://maps.googleapis.com/maps/api/directions/json?origin=60.22149729999999, 24.778862399999998
-    // &destination=60.259639, 24.845552&mode=transit&transit_mode=bus&departure_time=1550989407792&key=AIzaSyAj6v6LHIeWH3B-Il-AZiXuhMWq3hHsQu8
-    // https://maps.googleapis.com/maps/api/directions/json?origin=60.221501,%2024.778792&destination=helsinky&mode=transit&transit_mode=bus&departure_time=now&key=AIzaSyAj6v6LHIeWH3B-Il-AZiXuhMWq3hHsQu8
-    console.log("routeUrls: ", this.routeUrl);
 
+    console.log("this.routeUrl", this.routeUrl);
+    // get the direction route data from google map API
     this.http
       .get(this.routeUrl)
       .subscribe((directionData: DirectionMapJson) => {
         this.directionMapJson = directionData;
-        console.log("directionData: ", directionData);
+
+        // if there is some error == not OK, then give an alert
         if (directionData.status !== "OK") {
-          this.originGeo = "";
+          this.originGeo = ""; // set the starting point input field back to empty
+          this.vehicle = "car"; // set the vehicle input field back to "car"
           alert(directionData.status);
-        } else if (directionData.routes[0]) {
+        }
+        // if receiving the direction route data
+        else if (directionData.routes[0]) {
           for (
             let j = 0;
             j < directionData.routes[0].legs[0].steps.length;
             j++
           ) {
+            // get the address based on the geolocation
             let url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${
               directionData.routes[0].legs[0].steps[j].start_location.lat
             },${
@@ -166,6 +177,7 @@ export class SettingMapPage {
                 break;
               }
               case "DRIVING": {
+                // both "car" and "bicycle" are "DRIVING"
                 if (this.vehicle == "undefined" || "car") {
                   this.directionMapJson.routes[0].legs[0].steps[j].travel_icon =
                     "car";
@@ -174,12 +186,6 @@ export class SettingMapPage {
                   this.directionMapJson.routes[0].legs[0].steps[j].travel_icon =
                     "bicycle";
                 }
-                break;
-              }
-              case "BICYCLING": {
-                this.directionMapJson.routes[0].legs[0].steps[j].travel_icon =
-                  "bicycle";
-
                 break;
               }
               case "TRANSIT": {
@@ -248,8 +254,9 @@ export class SettingMapPage {
       });
   }
 
+  // click on CLOSE button to close the Modal
   closeModal() {
-    console.log("url ", this.routeUrl);
+    // prepare the direction route data to pass to the GoogleMapPage: origin, destination, travelMode (transportMode), departure_time
     let directionLineData = {
       origin: this.originGeo
         ? this.originGeo
@@ -268,11 +275,9 @@ export class SettingMapPage {
                 .split("&transit_mode=")[1]
                 .split("&")[0]
                 .toUpperCase()
-            : "", // BUS, RAIL, SUBWAY, TRAIN, TRAM
-        routingPreference: "FEWER_TRANSFERS" // "FEWER_TRANSFERS" or "LESS_WALKING"
+            : "" // BUS, RAIL, SUBWAY, TRAIN, TRAM
       }
     };
-    console.log("directionLineDatadd ", directionLineData);
     this.view.dismiss(directionLineData);
   }
 }
