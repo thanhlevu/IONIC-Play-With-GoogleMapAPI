@@ -74,6 +74,10 @@ export class GoogleMapComponent {
           };
           map.setCenter(that.currentLocation);
           console.log("that.MyLocation: ", that.currentLocation);
+          localStorage.setItem(
+            "current_location",
+            JSON.stringify(that.currentLocation)
+          );
 
           // ==> display the route from "origin" to "destination"
           // if using the private transport
@@ -96,6 +100,8 @@ export class GoogleMapComponent {
                   status == google.maps.GeocoderStatus.OVER_QUERY_LIMIT
                 ) {
                   setTimeout("wait = true", 2000);
+                } else if (status == "NOT_FOUND") {
+                  console.log(response);
                 } else {
                   window.alert("Directions request failed due to " + status);
                 }
@@ -123,6 +129,8 @@ export class GoogleMapComponent {
                   status == google.maps.GeocoderStatus.OVER_QUERY_LIMIT
                 ) {
                   setTimeout("wait = true", 2000);
+                } else if (status == "NOT_FOUND") {
+                  console.log(response);
                 } else {
                   window.alert("Directions request failed due to " + status);
                 }
@@ -171,18 +179,14 @@ export class GoogleMapComponent {
 
     settingMapModal.onDidDismiss(directionLineData => {
       console.log("directionLineData222", directionLineData);
-      if (directionLineData.origin.includes(",")) {
+      if (localStorage.getItem("departure_point")) {
+        this.origin = directionLineData.origin;
+      } else {
         this.origin.lat = +directionLineData.origin.split(",")[0];
         this.origin.lng = +directionLineData.origin.split(",")[1];
-      } else {
-        this.origin = directionLineData.origin;
       }
-      if (directionLineData.destination.includes(",")) {
-        this.destination.lat = +directionLineData.destination.split(",")[0];
-        this.destination.lng = +directionLineData.destination.split(",")[1];
-      } else {
-        this.destination = directionLineData.destination;
-      }
+      this.destination.lat = +directionLineData.destination.split(",")[0];
+      this.destination.lng = +directionLineData.destination.split(",")[1];
 
       this.selectedMode = directionLineData.travelMode;
       console.log("directionLineData.travelMode", directionLineData.travelMode);

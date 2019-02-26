@@ -1,4 +1,5 @@
 export interface DirectionMapJson {
+  status?: string;
   routes?: [
     {
       legs?: [

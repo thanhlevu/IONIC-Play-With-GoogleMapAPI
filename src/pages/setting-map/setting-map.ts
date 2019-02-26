@@ -61,7 +61,7 @@ export class SettingMapPage {
 
     //check if the user wants to start from somewhere else
     console.log("2this.destinationGeo", this.routeData.destinationGeo);
-    if (this.originGeo) {
+    if (this.originGeo != "" || this.originGeo == undefined) {
       //locating by name is less accurate than by geolocation
       this.routeUrl = `https://maps.googleapis.com/maps/api/directions/json?origin=${
         this.originGeo
@@ -71,8 +71,8 @@ export class SettingMapPage {
       }`;
     } else {
       this.routeUrl = `https://maps.googleapis.com/maps/api/directions/json?origin=${
-        this.routeData.originGeo.lat
-      }, ${this.routeData.originGeo.lng}
+        JSON.parse(localStorage.getItem("current_location")).lat
+      }, ${JSON.parse(localStorage.getItem("current_location")).lng}
       &destination=${this.routeData.destinationGeo.lat}, ${
         this.routeData.destinationGeo.lng
       }`;
@@ -132,8 +132,11 @@ export class SettingMapPage {
       .get(this.routeUrl)
       .subscribe((directionData: DirectionMapJson) => {
         this.directionMapJson = directionData;
-
-        if (directionData.routes[0]) {
+        console.log("directionData: ", directionData);
+        if (directionData.status == "ZERO_RESULTS") {
+          this.originGeo = "";
+          alert("ZERO_RESULTS");
+        } else if (directionData.routes[0]) {
           for (
             let j = 0;
             j < directionData.routes[0].legs[0].steps.length;
@@ -266,7 +269,7 @@ export class SettingMapPage {
                 .split("&")[0]
                 .toUpperCase()
             : "", // BUS, RAIL, SUBWAY, TRAIN, TRAM
-        routingPreference: "LESS_WALKING" // "FEWER_TRANSFERS" or "LESS_WALKING"
+        routingPreference: "FEWER_TRANSFERS" // "FEWER_TRANSFERS" or "LESS_WALKING"
       }
     };
     console.log("directionLineDatadd ", directionLineData);
