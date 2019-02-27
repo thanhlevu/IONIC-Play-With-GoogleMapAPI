@@ -1,6 +1,8 @@
 # IONIC-Play-With-GoogleMapAPI
 IONIC-Play-With-GoogleMapAPI
 
+$ npm install @ionic-native/core @ionic-native/google-maps
+
 $ ionic cordova plugin add cordova-plugin-geolocation
 
 $ npm install --save @ionic-native/geolocation@4
