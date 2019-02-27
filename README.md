@@ -1,6 +1,7 @@
 # IONIC-Play-With-GoogleMapAPI
 IONIC-Play-With-GoogleMapAPI
 
+*** NOTE: ==>  GOOGLE MAP COMPONENT 
 $ npm install @ionic-native/core @ionic-native/google-maps
 
 $ npm install @types/google-maps --save
