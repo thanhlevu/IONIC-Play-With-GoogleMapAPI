@@ -2,9 +2,13 @@
 IONIC-Play-With-GoogleMapAPI
 
 $ ionic cordova plugin add cordova-plugin-geolocation
+
 $ npm install --save @ionic-native/geolocation@4
+
 $ ionic cordova plugin add cordova-plugin-google-nearby --variable API_KEY="AIzaSyAj6v6LHIeWH3B-Il-AZiXuhMWq3hHsQu8"
+
 $ npm install --save @ionic-native/google-nearby@4
+
 
 // to find out where is the error
 npm install rxjs@6 rxjs-compat@6 --save npm install @ionic-native/core@5.0.0-beta.14
