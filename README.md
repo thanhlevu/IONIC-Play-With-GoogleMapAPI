@@ -1,7 +1,7 @@
 # IONIC-Play-With-GoogleMapAPI
 IONIC-Play-With-GoogleMapAPI
 
-$ ionic cordova plugin add cordova-plugin-geolocation --variable GEOLOCATION_USAGE_DESCRIPTION="To locate you"
+$ ionic cordova plugin add cordova-plugin-geolocation
 $ npm install --save @ionic-native/geolocation@4
 
 $ ionic cordova plugin add cordova-plugin-google-nearby --variable API_KEY="123456789"
