@@ -3,6 +3,7 @@ IONIC-Play-With-GoogleMapAPI
 
 *** NOTE: ==>  GOOGLE MAP COMPONENT 
 Tutorial link: https://www.youtube.com/watch?v=k12AkV_8mnY
+
 *** Error: CORS ==> set up ionic.config.js
   "proxies": [
     {
