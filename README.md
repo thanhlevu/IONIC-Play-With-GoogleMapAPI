@@ -3,6 +3,8 @@ IONIC-Play-With-GoogleMapAPI
 
 *** NOTE: ==>  GOOGLE MAP COMPONENT 
 Tutorial link: https://www.youtube.com/watch?v=k12AkV_8mnY
+*** Error: status of null  ==> close browser
+
 
 $ npm install @ionic-native/core @ionic-native/google-maps
 
