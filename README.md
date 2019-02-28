@@ -3,7 +3,18 @@ IONIC-Play-With-GoogleMapAPI
 
 *** NOTE: ==>  GOOGLE MAP COMPONENT 
 Tutorial link: https://www.youtube.com/watch?v=k12AkV_8mnY
-*** Error: status of null  ==> close browser
+*** Error: CORS ==> set up ionic.config.js
+  "proxies": [
+    {
+      "path": "/media",
+      "proxyUrl": "http://media.mw.metropolia.fi/wbma/media"
+    }
+
+then, go to ts file:
+    this.http.get("/media").subscribe(directionData => {
+      console.log("directionData", directionData);
+    });
+    
 
 
 $ npm install @ionic-native/core @ionic-native/google-maps
@@ -39,3 +50,4 @@ npm install --save @ionic-native/status-bar@5.0.0-beta.14
 // ==> https://maps.googleapis.com/maps/api/directions/json?origin=60.22149729999999,24.778862399999998&destination=60.259639, 24.845552&mode=transit&transit_mode=bus&departure_time=1550989407792&key=AIzaSyAj6v6LHIeWH3B-Il-AZiXuhMWq3hHsQu8
  
 // ==> https://maps.googleapis.com/maps/api/directions/json?origin=60.221501,%2024.778792&destination=helsinky&mode=transit&transit_mode=bus&departure_time=now&key=AIzaSyAj6v6LHIeWH3B-Il-AZiXuhMWq3hHsQu8
+
