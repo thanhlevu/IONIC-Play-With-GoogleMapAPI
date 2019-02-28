@@ -10,6 +10,7 @@ import { MyApp } from "./app.component";
 import { HomePage } from "../pages/home/home";
 import { HttpModule } from "@angular/http";
 import { HttpClientModule } from "@angular/common/http";
+import { HTTP } from "@ionic-native/http";
 
 import { GoogleMapComponent } from "../components/google-map/google-map";
 import {
@@ -39,6 +40,7 @@ import {
     Geolocation,
     GoogleNearby,
     SplashScreen,
+    HTTP,
     Spherical,
     { provide: ErrorHandler, useClass: IonicErrorHandler }
   ]

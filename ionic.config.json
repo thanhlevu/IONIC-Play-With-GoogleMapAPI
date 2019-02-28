@@ -3,5 +3,15 @@
   "integrations": {
     "cordova": {}
   },
-  "type": "ionic-angular"
+  "type": "ionic-angular",
+  "proxies": [
+    {
+      "path": "/media",
+      "proxyUrl": "http://media.mw.metropolia.fi/wbma/media"
+    },
+    {
+      "path": "/directions",
+      "proxyUrl": "https://maps.googleapis.com/maps/api/directions"
+    }
+  ]
 }

@@ -8,14 +8,6 @@ import {
   DirectionLineData
 } from "../../type";
 
-declare var google;
-/**
- * Generated class for the SettingMapPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
-
 @IonicPage()
 @Component({
   selector: "page-setting-map",
@@ -28,6 +20,7 @@ export class SettingMapPage {
   routeData: any;
   vehicle: string;
   routeUrl: string;
+
   constructor(
     private navParams: NavParams,
     private view: ViewController,
@@ -49,6 +42,10 @@ export class SettingMapPage {
     // get the starting point saved from GoogleMapPage
     this.originGeo = localStorage.getItem("departure_point");
 
+    /*     this.http.get("/media").subscribe(directionData => {
+      console.log("directionData", directionData);
+    }); */
+
     // setRouteInfo function to custom the route info
     this.setRouteInfo();
   }
@@ -69,19 +66,17 @@ export class SettingMapPage {
     this.routeData.departure_time.getMinutes(this.departure_time.split(":")[1]);
 
     //Get The Route's Info AIzaSyAj6v6LHIeWH3B-Il-AZiXuhMWq3hHsQu8    ====     AIzaSyDHY3SLJrzEYN-nWVsI5ix4dU1hrL5TJ3o
-    //https://maps.googleapis.com/maps/api/directions/json?origin=60.221501, 24.778792&destination=helsinky&mode=transit&transit_mode=train&departure_time=now&key=AIzaSyDHY3SLJrzEYN-nWVsI5ix4dU1hrL5TJ3o
+    //https://maps.googleapis.com/maps/api/directions/json?origin=60.221501, 24.778792&destination=helsinky&mode=transit&transit_mode=train&departure_time=now&key=AIzaSyAj6v6LHIeWH3B-Il-AZiXuhMWq3hHsQu8
 
     //check if the user wants to start from somewhere else
     if (this.originGeo != "" || this.originGeo == undefined) {
       //locating by name is less accurate than by geolocation
-      this.routeUrl = `https://maps.googleapis.com/maps/api/directions/json?origin=${
-        this.originGeo
-      }
-        &destination=${this.routeData.destinationGeo.lat}, ${
+      this.routeUrl = `/directions/json?origin=${this.originGeo}
+        &destination=${this.routeData.destinationGeo.lat},${
         this.routeData.destinationGeo.lng
       }`;
     } else {
-      this.routeUrl = `https://maps.googleapis.com/maps/api/directions/json?origin=${
+      this.routeUrl = `/directions/json?origin=${
         JSON.parse(localStorage.getItem("current_location")).lat
       }, ${JSON.parse(localStorage.getItem("current_location")).lng}
       &destination=${this.routeData.destinationGeo.lat}, ${
@@ -134,6 +129,7 @@ export class SettingMapPage {
 
     console.log("this.routeUrl", this.routeUrl);
     // get the direction route data from google map API
+
     this.http
       .get(this.routeUrl)
       .subscribe((directionData: DirectionMapJson) => {
